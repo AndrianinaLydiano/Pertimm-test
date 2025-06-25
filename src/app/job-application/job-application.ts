@@ -69,6 +69,24 @@ export class JobApplication {
     if (!this.confirmationUrl) return;
     this.loading = true;
 
-    // todo: confirmApplication call and logic
+    this.jobService.confirmApplication(this.confirmationUrl).subscribe({
+      next: (res) => {
+        this.toastr.success('Candidature confirmée avec succès !');
+        this.resetForm();
+      },
+      error: () => {
+        this.loading = false;
+        this.toastr.error('Erreur lors de la confirmation de la candidature');
+      },
+    });
+  }
+
+  resetForm() {
+    this.email = '';
+    this.first_name = '';
+    this.last_name = '';
+    this.loading = false;
+    this.polling = false;
+    this.confirmationUrl = undefined;
   }
 }
