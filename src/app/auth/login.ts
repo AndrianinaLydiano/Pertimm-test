@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
 import { ToastrService } from 'ngx-toastr'
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 export class Login {
   private authService = inject(AuthService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   email: string = '';
   password: string = '';
@@ -26,6 +27,7 @@ export class Login {
     this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
         this.toastr.success(`Bienvenue ${this.email}`, 'Success');
+        this.router.navigate(['/job-application']);
       },
       error: (error) => {
         if (error.status === 401) {
