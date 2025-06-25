@@ -18,6 +18,7 @@ export class JobApplication {
   email = '';
   first_name = '';
   last_name = '';
+  startTime: number | null = null;
 
   loading = false;
   polling = false;
@@ -55,6 +56,7 @@ export class JobApplication {
           this.loading = false;
           this.confirmationUrl = res.confirmation_url;
           this.toastr.success('Statut : COMPLETED — prêt à confirmer.');
+          this.startTime = Date.now();
         }
       },
       error: (err) => {
@@ -66,11 +68,22 @@ export class JobApplication {
   }
 
   confirmApplication() {
-    if (!this.confirmationUrl) return;
+    if (!this.confirmationUrl || !this.startTime) return;
     this.loading = true;
 
+    const now = Date.now();
+    const elapsedSeconds = (now - this.startTime) / 1000;
+
+    if (elapsedSeconds > 30) {
+      this.toastr.error(
+        'Temps écoulé. La confirmation doit se faire dans les 30 secondes.'
+      );
+      this.resetForm();
+      return;
+    }
+
     this.jobService.confirmApplication(this.confirmationUrl).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Candidature confirmée avec succès !');
         this.resetForm();
       },
